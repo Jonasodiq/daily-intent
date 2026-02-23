@@ -7,7 +7,9 @@ export interface Habit {
 }
 
 export interface HabitCompletion {
+  id: string;
   habitId: string;
+  userId: string;
   date: string;
   completed: boolean;
 }

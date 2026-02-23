@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
 import { createHabit, getHabits, deleteHabit } from '../../services/habitService';
+import { completeHabit, isCompletedToday } from '../../services/completionService';
 import { Habit } from '../../types';
 
 export default function HabitsScreen() {
   const [habits, setHabits] = useState<Habit[]>([]);
+  const [completedToday, setCompletedToday] = useState<{[key: string]: boolean}>({});
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,6 +19,13 @@ export default function HabitsScreen() {
     try {
       const data = await getHabits();
       setHabits(data);
+      
+      // Kolla vilka vanor är genomförda idag
+      const completedMap: {[key: string]: boolean} = {};
+      for (const habit of data) {
+        completedMap[habit.id] = await isCompletedToday(habit.id);
+      }
+      setCompletedToday(completedMap);
     } catch (error) {
       Alert.alert('Fel', 'Kunde inte hämta vanor');
     }
@@ -49,6 +58,19 @@ export default function HabitsScreen() {
     }
   };
 
+  const handleComplete = async (habitId: string) => {
+    if (completedToday[habitId]) {
+      Alert.alert('Info', 'Du har redan genomfört denna vana idag! 🎉');
+      return;
+    }
+    try {
+      await completeHabit(habitId);
+      setCompletedToday(prev => ({ ...prev, [habitId]: true }));
+    } catch (error) {
+      Alert.alert('Fel', 'Kunde inte markera vana');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Mina Vanor</Text>
@@ -76,13 +98,23 @@ export default function HabitsScreen() {
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
           <View style={styles.habitCard}>
-            <View>
+            <View style={styles.habitInfo}>
               <Text style={styles.habitName}>{item.name}</Text>
               <Text style={styles.habitCategory}>{item.category}</Text>
             </View>
-            <TouchableOpacity onPress={() => handleDelete(item.id)}>
-              <Text style={styles.deleteButton}>🗑️</Text>
-            </TouchableOpacity>
+            <View style={styles.habitActions}>
+              <TouchableOpacity 
+                style={[styles.completeButton, completedToday[item.id] && styles.completedButton]}
+                onPress={() => handleComplete(item.id)}
+              >
+                <Text style={styles.completeText}>
+                  {completedToday[item.id] ? '✅' : '⬜'}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleDelete(item.id)}>
+                <Text style={styles.deleteButton}>🗑️</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
         ListEmptyComponent={
@@ -100,8 +132,13 @@ const styles = StyleSheet.create({
   button: { backgroundColor: '#6C63FF', borderRadius: 8, padding: 16, alignItems: 'center', marginBottom: 24 },
   buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
   habitCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderWidth: 1, borderColor: '#eee', borderRadius: 8, marginBottom: 12 },
+  habitInfo: { flex: 1 },
   habitName: { fontSize: 16, fontWeight: 'bold', color: '#333' },
   habitCategory: { fontSize: 14, color: '#999', marginTop: 4 },
+  habitActions: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  completeButton: { padding: 4 },
+  completedButton: { opacity: 0.7 },
+  completeText: { fontSize: 24 },
   deleteButton: { fontSize: 20 },
   empty: { textAlign: 'center', color: '#999', marginTop: 48, fontSize: 16 },
 });
