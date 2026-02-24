@@ -60,7 +60,7 @@ export default function HabitsScreen() {
 
   const handleComplete = async (habitId: string) => {
     if (completedToday[habitId]) {
-      Alert.alert('Info', 'Du har redan genomfört denna vana idag! 🎉');
+      Alert.alert('Info', 'Du har redan genomfört denna vana idag!');
       return;
     }
     try {
@@ -89,7 +89,7 @@ export default function HabitsScreen() {
       />
       <TouchableOpacity style={styles.button} onPress={handleCreate}>
         <Text style={styles.buttonText}>
-          {loading ? 'Skapar...' : '+ Skapa vana'}
+          {loading ? 'Skapar...' : 'Skapa vana'}
         </Text>
       </TouchableOpacity>
 
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 12, marginBottom: 12 },
   button: { backgroundColor: '#6C63FF', borderRadius: 8, padding: 16, alignItems: 'center', marginBottom: 24 },
   buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
-  habitCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderWidth: 1, borderColor: '#eee', borderRadius: 8, marginBottom: 12 },
+  habitCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',backgroundColor: '#e7effd', padding: 16, borderWidth: 1, borderColor: '#dddddd', borderRadius: 8, marginBottom: 12 },
   habitInfo: { flex: 1 },
   habitName: { fontSize: 16, fontWeight: 'bold', color: '#333' },
   habitCategory: { fontSize: 14, color: '#999', marginTop: 4 },

@@ -3,6 +3,8 @@ import {
   collection,
   addDoc,
   getDocs,
+  deleteDoc,
+  doc,
   query,
   where,
   serverTimestamp,
@@ -84,6 +86,21 @@ export const calculateStreak = (completions: HabitCompletion[]): number => {
       break;
     }
   }
-
+  
   return streak;
+};
+
+// Ta bort alla completions för en vana
+export const deleteCompletionsForHabit = async (habitId: string) => {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Ingen användare inloggad');
+
+  const q = query(
+    collection(db, 'completions'),
+    where('habitId', '==', habitId)
+  );
+  const snapshot = await getDocs(q);
+  
+  const deletePromises = snapshot.docs.map(d => deleteDoc(doc(db, 'completions', d.id)));
+  await Promise.all(deletePromises);
 };

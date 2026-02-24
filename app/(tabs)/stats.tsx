@@ -56,7 +56,7 @@ export default function StatsScreen() {
         </Text>
       </View>
 
-      <Text style={styles.sectionTitle}>Streaks 🔥</Text>
+      <Text style={styles.sectionTitle}>Streaks</Text>
 
       <FlatList
         data={habits}

@@ -21,6 +21,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' },
   title: { fontSize: 24, fontWeight: 'bold', color: '#6C63FF', marginBottom: 32 },
-  button: { backgroundColor: '#FF6B6B', borderRadius: 8, padding: 16, alignItems: 'center', width: '80%' },
+  button: { backgroundColor: '#fab24e', borderRadius: 8, padding: 16, alignItems: 'center', width: '50%' },
   buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
 });

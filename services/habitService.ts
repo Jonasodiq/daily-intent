@@ -10,6 +10,7 @@ import {
   serverTimestamp
 } from 'firebase/firestore';
 import { Habit } from '../types';
+import { deleteCompletionsForHabit } from './completionService';
 
 // Skapa en ny vana
 export const createHabit = async (name: string, category: string) => {
@@ -43,4 +44,5 @@ export const getHabits = async (): Promise<Habit[]> => {
 // Ta bort en vana
 export const deleteHabit = async (habitId: string) => {
   await deleteDoc(doc(db, 'habits', habitId));
+  await deleteCompletionsForHabit(habitId);
 };
