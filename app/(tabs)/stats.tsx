@@ -3,6 +3,7 @@ import { View, Text, FlatList, StyleSheet, Alert } from 'react-native';
 import { getHabits } from '../../services/habitService';
 import { getCompletions, calculateStreak } from '../../services/completionService';
 import { Habit, HabitCompletion } from '../../types';
+import { HabitStatsChart } from '../../components/HabitStatsChart';
 
 export default function StatsScreen() {
   const [habits, setHabits] = useState<Habit[]>([]);
@@ -36,6 +37,14 @@ export default function StatsScreen() {
     return calculateStreak(habitCompletions);
   };
 
+  const chartStats = habits.map(habit => ({
+    habitName: habit.name,
+    streak: getHabitStreak(habit.id),
+    completionRate: Math.round(
+      (completions.filter(c => c.habitId === habit.id).length / totalHabits) * 100
+    ),
+  }));
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -47,7 +56,7 @@ export default function StatsScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Statistik 📊</Text>
-
+        
       <View style={styles.summaryCard}>
         <Text style={styles.summaryTitle}>Idag</Text>
         <Text style={styles.percentage}>{percentage}%</Text>
@@ -56,8 +65,9 @@ export default function StatsScreen() {
         </Text>
       </View>
 
-      <Text style={styles.sectionTitle}>Streaks</Text>
+      <HabitStatsChart stats={chartStats} />
 
+      <Text style={styles.sectionTitle}>Streaks 🔥</Text>
       <FlatList
         data={habits}
         keyExtractor={item => item.id}
@@ -70,13 +80,13 @@ export default function StatsScreen() {
             <View style={styles.streakContainer}>
               <Text style={styles.streakNumber}>{getHabitStreak(item.id)}</Text>
               <Text style={styles.streakLabel}>dagar</Text>
-            </View>
-          </View>
+            </View>      
+          </View>    
         )}
         ListEmptyComponent={
           <Text style={styles.empty}>Inga vanor än! 🌱</Text>
-        }
-      />
+        }     
+      />     
     </View>
   );
 }
