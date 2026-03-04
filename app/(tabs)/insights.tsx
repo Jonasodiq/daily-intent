@@ -40,7 +40,7 @@ export default function InsightsScreen() {
       setInsights(aiInsights);
     } catch (error) {
       console.error('Fel vid laddning av insikter:', error);
-      setInsights('⚠️ Kunde inte ladda insikter. Försök igen senare.');
+      setInsights('Kunde inte ladda insikter. Försök igen senare.');
     } finally {
       setLoading(false);
     }
@@ -153,9 +153,10 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   progressLabel: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: 16,
+    color: '#333',
     marginBottom: 8,
+    fontWeight: '600',
   },
   progressBarContainer: {
     height: 8,
@@ -171,7 +172,7 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 14,
-    color: '#333',
+    color: '#666',
     fontWeight: '600',
   },
   insightsCard: {
@@ -192,7 +193,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   insightsText: {
-    fontSize: 15,
+    fontSize: 16,
     lineHeight: 24,
     color: '#555',
     marginBottom: 20,
