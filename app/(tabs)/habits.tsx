@@ -1,12 +1,30 @@
-import { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
-import { createHabit, getHabits, deleteHabit } from '../../services/habitService';
-import { completeHabit, isCompletedToday } from '../../services/completionService';
+import { useEffect, useState } from 'react';
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {
+  completeHabit,
+  isCompletedToday,
+  uncompleteHabit,
+} from '../../services/completionService';
+import {
+  createHabit,
+  deleteHabit,
+  getHabits,
+} from '../../services/habitService';
 import { Habit } from '../../types';
 
 export default function HabitsScreen() {
   const [habits, setHabits] = useState<Habit[]>([]);
-  const [completedToday, setCompletedToday] = useState<{[key: string]: boolean}>({});
+  const [completedToday, setCompletedToday] = useState<{
+    [key: string]: boolean;
+  }>({});
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,9 +37,9 @@ export default function HabitsScreen() {
     try {
       const data = await getHabits();
       setHabits(data);
-      
+
       // Kolla vilka vanor är genomförda idag
-      const completedMap: {[key: string]: boolean} = {};
+      const completedMap: { [key: string]: boolean } = {};
       for (const habit of data) {
         completedMap[habit.id] = await isCompletedToday(habit.id);
       }
@@ -59,22 +77,23 @@ export default function HabitsScreen() {
   };
 
   const handleComplete = async (habitId: string) => {
-    if (completedToday[habitId]) {
-      Alert.alert('Info', 'Du har redan genomfört denna vana idag!');
-      return;
-    }
     try {
-      await completeHabit(habitId);
-      setCompletedToday(prev => ({ ...prev, [habitId]: true }));
+      if (completedToday[habitId]) {
+        await uncompleteHabit(habitId);
+        setCompletedToday((prev) => ({ ...prev, [habitId]: false }));
+      } else {
+        await completeHabit(habitId);
+        setCompletedToday((prev) => ({ ...prev, [habitId]: true }));
+      }
     } catch (error) {
-      Alert.alert('Fel', 'Kunde inte markera vana');
+      Alert.alert('Fel', 'Kunde inte uppdatera vana');
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Mina Vanor</Text>
-      
+
       <TextInput
         style={styles.input}
         placeholder="Namn på vana t.ex. Träna"
@@ -95,7 +114,7 @@ export default function HabitsScreen() {
 
       <FlatList
         data={habits}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.habitCard}>
             <View style={styles.habitInfo}>
@@ -103,8 +122,11 @@ export default function HabitsScreen() {
               <Text style={styles.habitCategory}>{item.category}</Text>
             </View>
             <View style={styles.habitActions}>
-              <TouchableOpacity 
-                style={[styles.completeButton, completedToday[item.id] && styles.completedButton]}
+              <TouchableOpacity
+                style={[
+                  styles.completeButton,
+                  completedToday[item.id] && styles.completedButton,
+                ]}
                 onPress={() => handleComplete(item.id)}
               >
                 <Text style={styles.completeText}>
@@ -127,11 +149,39 @@ export default function HabitsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 24, backgroundColor: '#fff' },
-  title: { fontSize: 28, fontWeight: 'bold', color: '#6C63FF', marginBottom: 24, marginTop: 48 },
-  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 12, marginBottom: 12 },
-  button: { backgroundColor: '#6C63FF', borderRadius: 8, padding: 16, alignItems: 'center', marginBottom: 24 },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#6C63FF',
+    marginBottom: 24,
+    marginTop: 48,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
+  },
+  button: {
+    backgroundColor: '#6C63FF',
+    borderRadius: 8,
+    padding: 16,
+    alignItems: 'center',
+    marginBottom: 24,
+  },
   buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
-  habitCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',backgroundColor: '#e7effd', padding: 16, borderWidth: 1, borderColor: '#dddddd', borderRadius: 8, marginBottom: 12 },
+  habitCard: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#e7effd',
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#dddddd',
+    borderRadius: 8,
+    marginBottom: 12,
+  },
   habitInfo: { flex: 1 },
   habitName: { fontSize: 16, fontWeight: 'bold', color: '#333' },
   habitCategory: { fontSize: 14, color: '#999', marginTop: 4 },
