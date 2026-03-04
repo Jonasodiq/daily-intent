@@ -50,7 +50,7 @@ const getCachedInsight = async (dataHash: string): Promise<string | null> => {
 
     return insight;
   } catch (error) {
-    console.error('⚠️ Fel vid läsning av cache:', error);
+    console.error('Fel vid läsning av cache:', error);
     return null;
   }
 };
@@ -66,7 +66,7 @@ const cacheInsight = async (insight: string, dataHash: string): Promise<void> =>
     await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(cached));
     console.log('✅ Insikt cachad');
   } catch (error) {
-    console.error('⚠️ Fel vid sparande av cache:', error);
+    console.error('Fel vid sparande av cache:', error);
   }
 };
 
